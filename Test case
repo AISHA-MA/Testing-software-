@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>QA Test Cases – Login & Registration</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161920;
+    --surface2: #1e2230;
+    --border: #2a2f42;
+    --accent-login: #3b82f6;
+    --accent-login-dim: rgba(59,130,246,0.12);
+    --accent-reg: #10b981;
+    --accent-reg-dim: rgba(16,185,129,0.12);
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --pass: #10b981;
+    --fail: #ef4444;
+    --pending: #f59e0b;
+    --row-hover: rgba(255,255,255,0.03);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    padding: 40px 28px 60px;
+  }
+
+  header {
+    margin-bottom: 44px;
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+  }
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+  header .badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  .section {
+    margin-bottom: 52px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .section-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+  .section-tag {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 3px;
+    border: 1px solid;
+  }
+  .login-tag {
+    color: var(--accent-login);
+    border-color: var(--accent-login);
+    background: var(--accent-login-dim);
+  }
+  .reg-tag {
+    color: var(--accent-reg);
+    border-color: var(--accent-reg);
+    background: var(--accent-reg-dim);
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+
+  thead tr {
+    background: var(--surface2);
+  }
+  thead th {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  thead th:first-child { width: 40px; text-align: center; }
+  thead th:nth-child(3) { width: 90px; }
+
+  tbody tr {
+    background: var(--surface);
+    transition: background 0.15s;
+  }
+  tbody tr:hover { background: #1a1d26; }
+  tbody tr.sub-row { background: #131620; }
+  tbody tr.sub-row:hover { background: #181b25; }
+  tbody tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
+
+  td {
+    padding: 11px 16px;
+    vertical-align: top;
+    color: var(--text);
+  }
+  td:first-child {
+    text-align: center;
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  td.scenario {
+    font-family: 'Syne', sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text);
+    min-width: 220px;
+  }
+  td.sub-scenario {
+    font-size: 12px;
+    color: #9ca3af;
+    padding-left: 28px;
+    min-width: 220px;
+  }
+  td.sub-scenario::before {
+    content: '↳ ';
+    color: var(--muted);
+    font-size: 10px;
+  }
+  td.tc-id {
+    font-weight: 500;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .login-id { color: var(--accent-login); }
+  .reg-id   { color: var(--accent-reg); }
+
+  td input[type="text"] {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 6px 10px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    width: 100%;
+    min-width: 120px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  td input[type="text"]:focus { border-color: #3b82f6; }
+
+  .status-select {
+    appearance: none;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px 28px 5px 10px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    outline: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7280'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    transition: border-color 0.15s;
+  }
+  .status-select:focus { border-color: #3b82f6; }
+  .status-select[data-val="Pass"]    { color: var(--pass);    border-color: rgba(16,185,129,0.4); background-color: rgba(16,185,129,0.06); }
+  .status-select[data-val="Fail"]    { color: var(--fail);    border-color: rgba(239,68,68,0.4);  background-color: rgba(239,68,68,0.06); }
+  .status-select[data-val="Pending"] { color: var(--pending); border-color: rgba(245,158,11,0.4); background-color: rgba(245,158,11,0.06); }
+
+  .print-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 7px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .print-btn:hover { border-color: #3b82f6; color: #3b82f6; }
+
+  @media print {
+    body { background: white; color: black; padding: 20px; }
+    .print-btn { display: none; }
+    .status-select, td input[type="text"] { border: 1px solid #ccc; }
+    :root {
+      --bg: #fff; --surface: #fff; --surface2: #f5f5f5;
+      --border: #e0e0e0; --text: #111; --muted: #555;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>QA Test Cases</h1>
+  </div>
+  <span class="badge">v1.0 · Draft</span>
+  <button class="print-btn" onclick="window.print()">⎙ Export / Print</button>
+</header>
+
+<!-- ═══════════════════ LOGIN ═══════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <h2>Login Function</h2>
+    <span class="section-tag login-tag">Auth</span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Test Scenario</th>
+          <th>Test Case ID</th>
+          <th>Summary</th>
+          <th>Preconditions</th>
+          <th>Steps</th>
+          <th>Expected Result</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td>1</td>
+          <td class="scenario">Verify login with correct credentials</td>
+          <td class="tc-id login-id">TC-L-01</td>
+          <td><input type="text" placeholder="Add summary…"/></td>
+          <td><input type="text" placeholder="Add preconditions…"/></td>
+          <td><input type="text" placeholder="Add steps…"/></td>
+          <td><input type="text" placeholder="Add expected result…"/></td>
+          <td><select class="status-select" onchange="this.dataset.val=this.value"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>Pending</option></select></td>
+        </tr>
+
+        <tr>
+          <td>2</td>
+          <td class="scenario">Verify login with correct credentials via Enter key</td>
+          <td class="tc-id login-id">TC-L-02</td>
+          <td><input type="text" placeholder="Add summary…"/></td>
+          <td><input type="text" placeholder="Add preconditions…"/></td>
+          <td><input type="text" placeholder="Add steps…"/></td>
+          <td><input type="text" placeholder="Add expected result…"/></td>
+          <td><select class="status-select" onchange="this.dataset.val=this.value"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>Pending</option></select></td>
+        </tr>
+
+        <!-- Scenario 3 – 3 sub-rows -->
+        <tr>
+          <td>3</td>
+          <td class="sub-scenario">Error message displayed after entering email only (password blank)</td>
+          <td class="tc-id login-id">TC-L-03a</td>
+          <td><input type="text" placeholder="Add summary…"/></td>
+          <td><input type="text" placeholder="Add preconditions…"/></td>
+          <td><input type="text" placeholder="Add steps…"/></td>
+          <td><input type="text" placeholder="Add expected result…"/></td>
+          <td><select class="status-select" onchange="this.dataset.val=this.value"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>Pending</option></select></td>
+        </tr>
+        <tr class="sub-row">
+          <td></td>
+          <td class="sub-scenario">Error message displayed after entering password only (email blank)</td>
+          <td class="tc-id login-id">TC-L-03b</td>
+          <td><input type="text" placeholder="Add summary…"/></td>
+          <td><input type="text" placeholder="Add preconditions…"/></td>
+          <td><input type="text" placeholder="Add steps…"/></td>
+          <td><input type="text" placeholder="Add expected result…"/></td>
+          <td><select class="status-select" onchange="this.dataset.val=this.value"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>Pending</option></select></td>
+        </tr>
+        <tr class="sub-row">
+          <td></td>
+          <td class="sub-scenario">Error message grammar is correct</td>
+          <td class="tc-id login-id">TC-L-03c</td>
+          <td><input type="text" placeholder="Add summary…"/></td>
+          <td><input type="text" placeholder="Add preconditions…"/></td>
+          <td><input type="text" placeholder="Add steps…"/></td>
+          <td><input type="text" placeholder="Add expected result…"/></td>
+          <td><select class="status-select" onchange="this.dataset.val=this.value"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>Pending</option></select></td>
+        </tr>
+
+        <tr>
+          <td>4</td>
+          <td class="scenario">Verify password is entered in encrypted form</td>
+          <td class="tc-id login-id">TC-L-04</td>
+          <td><input type="text" placeholder="Add summary…"/></td>
+          <td><input type="text" placeholder="Add preconditions…"/></td>
+          <td><input type="text" placeholder="Add steps…"/></td>
+          <td><input type="text" placeholder="Add expected result…"/></td>
+          <td><select class="status-select" onchange="this.dataset.val=this.value"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>Pending</option></select></td>
+        </tr>
+
+        <tr>
+          <td>5</td>
+          <td class="scenario">Verify eye icon is present in the password field</td>
+          <td class="tc-id login-id">TC-L-05</td>
+          <td><input type="text" placeholder="Add summary…"/></td>
+          <td><input type="text" placeholder="Add preconditions…"/></td>
+          <td><input type="text" placeholder="Add steps…"/></td>
+          <td><input type="text" placeholder="Add expected result…"/></td>
+          <td><select class="status-select" onchange="this.dataset.val=this.value"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>Pending</option></select></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ═══════════════════ REGISTRATION ═══════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <h2>Registration Function</h2>
+    <span class="section-tag reg-tag">Sign-Up</span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Test Scenario</th>
+          <th>Test Case ID</th>
+          <th>Summary</th>
+          <th>Preconditions</th>
+          <th>Steps</th>
+          <th>Expected Result</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td>1</td>
+          <td class="scenario">Verify registration with valid data in mandatory fields</td>
+          <td class="tc-id reg-id">TC-R-01</td>
+          <td><input type="text" placeholder="Add summary…"/></td>
+          <td><input type="text" placeholder="Add preconditions…"/></td>
+          <td><input type="text" placeholder="Add steps…"/></td>
+          <td><input type="text" placeholder="Add expected result…"/></td>
+          <td><select class="status-select" onchange="this.dataset.val=this.value"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>Pending</option></select></td>
+        </tr>
+
+        <!-- Scenario 2 – 2 sub-rows -->
+        <tr>
+          <td>2</td>
+          <td class="sub-scenario">Registration fails when entering email only (password blank)</td>
+          <td class="tc-id reg-id">TC-R-02a</td>
+          <td><input type="text" placeholder="Add summary…"/></td>
+          <td><input type="text" placeholder="Add preconditions…"/></td>
+          <td><input type="text" placeholder="Add steps…"/></td>
+          <td><input type="text" placeholder="Add expected result…"/></td>
+          <td><select class="status-select" onchange="this.dataset.val=this.value"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>Pending</option></select></td>
+        </tr>
+        <tr class="sub-row">
+          <td></td>
+          <td class="sub-scenario">Registration fails when entering password only (email blank)</td>
+          <td class="tc-id reg-id">TC-R-02b</td>
+          <td><input type="text" placeholder="Add summary…"/></td>
+          <td><input type="text" placeholder="Add preconditions…"/></td>
+          <td><input type="text" placeholder="Add steps…"/></td>
+          <td><input type="text" placeholder="Add expected result…"/></td>
+          <td><select class="status-select" onchange="this.dataset.val=this.value"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>Pending</option></select></td>
+        </tr>
+
+        <tr>
+          <td>3</td>
+          <td class="scenario">Verify error message is displayed for invalid inputs</td>
+          <td class="tc-id reg-id">TC-R-03</td>
+          <td><input type="text" placeholder="Add summary…"/></td>
+          <td><input type="text" placeholder="Add preconditions…"/></td>
+          <td><input type="text" placeholder="Add steps…"/></td>
+          <td><input type="text" placeholder="Add expected result…"/></td>
+          <td><select class="status-select" onchange="this.dataset.val=this.value"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>Pending</option></select></td>
+        </tr>
+
+        <tr>
+          <td>4</td>
+          <td class="scenario">Verify system behavior on successful registration</td>
+          <td class="tc-id reg-id">TC-R-04</td>
+          <td><input type="text" placeholder="Add summary…"/></td>
+          <td><input type="text" placeholder="Add preconditions…"/></td>
+          <td><input type="text" placeholder="Add steps…"/></td>
+          <td><input type="text" placeholder="Add expected result…"/></td>
+          <td><select class="status-select" onchange="this.dataset.val=this.value"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>Pending</option></select></td>
+        </tr>
+
+        <tr>
+          <td>5</td>
+          <td class="scenario">Verify password complexity / strength requirements</td>
+          <td class="tc-id reg-id">TC-R-05</td>
+          <td><input type="text" placeholder="Add summary…"/></td>
+          <td><input type="text" placeholder="Add preconditions…"/></td>
+          <td><input type="text" placeholder="Add steps…"/></td>
+          <td><input type="text" placeholder="Add expected result…"/></td>
+          <td><select class="status-select" onchange="this.dataset.val=this.value"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>Pending</option></select></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>
